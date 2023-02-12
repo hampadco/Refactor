@@ -1,0 +1,93 @@
+﻿<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+
+
+<canvas id="serial-port-data-chart"></canvas>
+<div class="text-center">
+  
+  <button id="startBtn" class="btn btn-success">Start Connection</button>
+<button id="stopBtn" class="btn btn-danger">Stop Connection</button>
+
+
+</div>
+
+
+<script>
+var ctx = document.getElementById("serial-port-data-chart").getContext("2d");
+var chart = new Chart(ctx, {
+    type: "line",
+    data: {
+        labels: [],
+        datasets: [{
+            label: "Serial Port Data",
+            //show data and time milliseconds
+            data: [] ,
+        
+            borderColor: "rgba(75, 192, 192, 1)",
+            backgroundColor: "rgba(75, 192, 192, 0.2)"
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+var dataPointLimit = 500; // number of data points to display on the chart
+
+
+ 
+
+
+var connection = new signalR.HubConnectionBuilder().withUrl("/dataHub").build();
+
+connection.on("ReceiveData", function (data) {
+   if (data.trim() !== "") {
+    // Parse the data as a number
+    var parsedData = parseFloat(data);
+
+    // Add the data to the chart
+    chart.data.labels.push("");
+    chart.data.datasets[0].data.push(parsedData);
+
+    // Check if the number of data points is greater than the limit
+    if (chart.data.datasets[0].data.length> dataPointLimit) {
+      // Remove the oldest data point
+      chart.data.labels.shift();
+      chart.data.datasets[0].data.shift();
+    }
+
+    // Update the chart
+    chart.update();
+    
+  }
+});
+
+document.getElementById("startBtn").addEventListener("click", function () {
+    connection.start().then(function () {
+        $.post("/Home/StartReading");
+        console.log("SignalR connection started.");
+    });
+});
+
+document.getElementById("stopBtn").addEventListener("click", function () {
+    connection.stop().then(function () {
+        console.log("SignalR connection stopped.");
+    });
+});
+</script>
+
+    
+
+
+
+
+
+
+</script>

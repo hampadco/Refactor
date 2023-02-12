@@ -1,0 +1,183 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+  <script src="https://code.jscharting.com/latest/jscharting.js"></script> 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+
+  <style> 
+    #chartDiv { 
+      width: 500px; 
+      height: 500px; 
+    } 
+  </style> 
+</head> 
+<body> 
+  <div id="chartDiv"></div> 
+
+  <script>
+    // JS 
+var INTERVAL_ID, 
+  animationDuration = 420, 
+  updateInterval = 1500; 
+var chart = JSC.chart( 
+  'chartDiv', 
+  { 
+    debug: true, 
+    type: 'gauge ', 
+    legend_visible: false, 
+    animation_duration: animationDuration, 
+    xAxis: { 
+      scale: { 
+        // Helps position the marker on top of the y Axis. 
+        range: [0, 1] 
+      } 
+    }, 
+    palette: { 
+      pointValue: 'yValue', 
+      ranges: [ 
+        { value: [0, 30], color: '#FF5353' }, 
+        { value: [30, 70], color: '#FFD221' }, 
+        { value: [70, 100], color: '#77E6B4' } 
+      ] 
+    }, 
+    yAxis: { 
+      defaultTick: { 
+        // Pads around the gauge 
+        padding: 13, 
+        label_visible: false
+      }, 
+      line: { 
+        width: 15, 
+        // Gaps occur at tick intervals defined below. 
+        breaks_gap: 0.03, 
+        color: 'smartPalette'
+      }, 
+      scale: { range: [-40, 100], interval: 10 } 
+    }, 
+  
+    defaultSeries: { 
+      opacity: 1, 
+      mouseTracking_enabled: false, 
+      shape: { 
+        label: { 
+          text: labelText(50), 
+          style: { fontSize: 48 }, 
+          align: 'center', 
+          verticalAlign: 'middle'
+        } 
+      } 
+    }, 
+    series: [ 
+      { 
+        type: 'marker', 
+        defaultPoint: { 
+          marker: { 
+            outline: { 
+              width: 10, 
+              color: 'currentColor'
+            }, 
+            fill: 'white', 
+            type: 'circle', 
+            size: 30 
+          } 
+        }, 
+        points: [{ y: 50 }] 
+      } 
+    ], 
+    toolbar_items: { 
+      Stop: { 
+        type: 'option', 
+        icon_name: 'system/default/pause', 
+        margin: 10, 
+        boxVisible: true, 
+        label_text: 'Pause', 
+        events: { change: playPause }, 
+        states_select_icon_name: 
+          'system/default/play', 
+        states_select_label_text: 'Play'
+      } 
+    } 
+  }, 
+  function() { 
+    playPause(); 
+  } 
+); 
+  
+/** 
+ * Updates the chart with a random value. 
+
+ */
+function updateChart(chrt) { 
+  chrt = chart || chrt; 
+
+ var connection = new signalR.HubConnectionBuilder().withUrl("/dataHub").build();
+
+ connection.on("ReceiveData", function (data) {
+            // Update the span element with the latest data
+            
+            let parsedData = parseInt(data);
+            if(isNaN(parsedData))
+            {
+                parsedData = 0;
+            }
+            y=parsedData;
+            console.log("a:" +y);
+            
+           
+        });
+
+    connection.start().then(function () {
+        $.post("/Home/StartReading");
+    });
+
+  
+  var series = chrt.series(0), 
+ 
+    rValue = y; 
+    console.log("b:" +y);
+  
+  series.options({ 
+    shape_label_text: labelText(rValue) 
+  }); 
+  series.points(0).options({ y: rValue }); 
+
+  // Call updateData to update the data
+  
+}
+
+  
+function playPause(val) { 
+  if (val) { 
+    clearInterval(INTERVAL_ID); 
+  } else { 
+    INTERVAL_ID = setInterval(function() { 
+      updateChart(chart); 
+    }, 0); 
+  } 
+} 
+  
+function labelText(value) { 
+  var fgg = 
+    value >= 70 
+      ? 'Great!'
+      : value >= 30 
+      ? 'Good'
+      : 'weak'; 
+  return ( 
+    value + 
+    '<br/><span style="fontSize: 32px">' + 
+    fgg + 
+    '</span>'
+  ); 
+} 
+
+
+ 
+
+
+  </script>
+
+</body>
+
+</html>
