@@ -13,6 +13,22 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\img\\icon.png",
+      "PackagePath": "staticwebassets\\img\\icon.png"
+    },
+    {
+      "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\js\\Chart.min.js",
+      "PackagePath": "staticwebassets\\js\\Chart.min.js"
+    },
+    {
+      "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\js\\jquery-3.6.0.min.js",
+      "PackagePath": "staticwebassets\\js\\jquery-3.6.0.min.js"
+    },
+    {
+      "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\js\\signalr.min.js",
+      "PackagePath": "staticwebassets\\js\\signalr.min.js"
+    },
+    {
       "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\js\\signalr\\dist\\browser\\signalr.js",
       "PackagePath": "staticwebassets\\js\\signalr\\dist\\browser\\signalr.js"
     },
@@ -247,6 +263,14 @@
     {
       "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\manifest.json",
+      "PackagePath": "staticwebassets\\manifest.json"
+    },
+    {
+      "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\sw.js",
+      "PackagePath": "staticwebassets\\sw.js"
     },
     {
       "Id": "C:\\Users\\apple\\Desktop\\Refactor\\wwwroot\\testHub.js",

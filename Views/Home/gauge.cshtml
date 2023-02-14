@@ -1,111 +1,75 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+<script src="~/js/Chart.min.js"></script>
+<script src="~/js/jquery-3.6.0.min.js"></script>
+<script src="~/js/signalr.min.js"></script>
 
+<canvas id="serial-port-data-chart"></canvas>
 <div class="text-center">
-
-<canvas id="myChart"></canvas>
-
-</div>
-
-<div class="text-center mt-3">
-  
   <button id="startBtn" class="btn btn-success">Start Connection</button>
   <button id="stopBtn" class="btn btn-danger">Stop Connection</button>
-
 </div>
 
-
 <script>
-var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Data'],
-        datasets: [{
-            data: [0],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: false,
-        maintainAspectRatio: true,
-        rotation: -Math.PI,
-        circumference: Math.PI,
-        legend: {
-            display: false
-        }
-    },
-    plugins: [{
-        beforeDraw: function(chart) {
-            var width = chart.chart.width,
-                height = chart.chart.height,
-                ctx = chart.chart.ctx;
+var ctx = document.getElementById("serial-port-data-chart").getContext("2d");
+var dataPointLimit = 500; // number of data points to display on the chart
 
-            ctx.restore();
-            var fontSize = (height / 114).toFixed(2);
-            ctx.font = fontSize + "em sans-serif";
-            ctx.textBaseline = "middle";
-
-            var text = chart.data.datasets[0].data[0] ,
-                textX = Math.round((width - ctx.measureText(text).width) / 2),
-                textY = height / 2 +50;
-
-                //if text is NaN then display 0
-                if (isNaN(text)) {
-                    text = 0;
-                }
-
-            ctx.fillText(text, textX, textY);
-            ctx.save();
-        }
+var chart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [{
+      label: "Serial Port Data",
+      data: [],
+      borderColor: "rgba(75, 192, 192, 1)",
+      backgroundColor: "rgba(75, 192, 192, 0.2)"
     }]
+  },
+  options: {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  }
 });
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/dataHub").build();
+var dataArray = [];
 
-    connection.on("ReceiveData", function (data) {
-       // Update the chart with the latest data
-            let value = parseInt(data);
-            
-            if (value >= -40 && value < -20) {
-                myChart.data.datasets[0].backgroundColor = 'rgba(255, 99, 132, 0.2)';
-                myChart.data.datasets[0].borderColor = 'rgba(255, 99, 132, 1)';
-            } else if (value >= -20 && value < 0) {
-                myChart.data.datasets[0].backgroundColor = 'rgba(54, 162, 235, 0.2)';
-                myChart.data.datasets[0].borderColor = 'rgba(54, 162, 235, 1)';
-            } else if (value >= 0 && value < 20) {
-                myChart.data.datasets[0].backgroundColor = 'rgba(255, 206, 86, 0.2)';
-                myChart.data.datasets[0].borderColor = 'rgba(255, 206, 86, 1)';
-            }
-            // Add more else if conditions based on your desired range
-            myChart.data.datasets[0].data[0] = value;
-            myChart.update();
-    });
-
-   
-
-           
-
+connection.on("ReceiveData", function (data) {
+  if (data.trim() !== "") {
+    dataArray.push(data);
+  }
+});
 
 document.getElementById("startBtn").addEventListener("click", function () {
-    connection.start().then(function () {
-        $.post("/Home/StartReading");
-        console.log("SignalR connection started.");
-    });
+  connection.start().then(function () {
+    $.post("/Home/StartReading");
+  });
 });
 
 document.getElementById("stopBtn").addEventListener("click", function () {
-    connection.stop().then(function () {
-        console.log("SignalR connection stopped.");
-    });
-});
+  connection.stop().then(function () {
+    // Save the dataArray to a file
+    // ...
 
+    // Read the data from the file and add it to the chart
+    for (var i = 0; i < dataArray.length; i++) {
+      var parsedData = parseFloat(dataArray[i]);
+
+      chart.data.labels.push("");
+      chart.data.datasets[0].data.push(parsedData);
+
+      // Check if the number of data points is greater than the limit
+      if (chart.data.datasets[0].data.length > dataPointLimit) {
+        chart.data.labels.shift();
+        chart.data.datasets[0].data.shift();
+      }
+
+      chart.update();
+    }
+  });
+});
 
 </script>

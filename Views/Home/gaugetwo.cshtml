@@ -1,183 +1,65 @@
-<!DOCTYPE html> 
-<html> 
-<head> 
-  <script src="https://code.jscharting.com/latest/jscharting.js"></script> 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+<script src="~/js/Chart.min.js"></script>
+<script src="~/js/jquery-3.6.0.min.js"></script>
+<script src="~/js/signalr.min.js"></script>
 
-  <style> 
-    #chartDiv { 
-      width: 500px; 
-      height: 500px; 
-    } 
-  </style> 
-</head> 
-<body> 
-  <div id="chartDiv"></div> 
+<canvas id="serial-port-data-chart"></canvas>
+<div class="text-center">
+  <button id="startBtn" class="btn btn-success">Start Connection</button>
+  <button id="stopBtn" class="btn btn-danger">Stop Connection</button>
+</div>
 
-  <script>
-    // JS 
-var INTERVAL_ID, 
-  animationDuration = 420, 
-  updateInterval = 1500; 
-var chart = JSC.chart( 
-  'chartDiv', 
-  { 
-    debug: true, 
-    type: 'gauge ', 
-    legend_visible: false, 
-    animation_duration: animationDuration, 
-    xAxis: { 
-      scale: { 
-        // Helps position the marker on top of the y Axis. 
-        range: [0, 1] 
-      } 
-    }, 
-    palette: { 
-      pointValue: 'yValue', 
-      ranges: [ 
-        { value: [0, 30], color: '#FF5353' }, 
-        { value: [30, 70], color: '#FFD221' }, 
-        { value: [70, 100], color: '#77E6B4' } 
-      ] 
-    }, 
-    yAxis: { 
-      defaultTick: { 
-        // Pads around the gauge 
-        padding: 13, 
-        label_visible: false
-      }, 
-      line: { 
-        width: 15, 
-        // Gaps occur at tick intervals defined below. 
-        breaks_gap: 0.03, 
-        color: 'smartPalette'
-      }, 
-      scale: { range: [-40, 100], interval: 10 } 
-    }, 
-  
-    defaultSeries: { 
-      opacity: 1, 
-      mouseTracking_enabled: false, 
-      shape: { 
-        label: { 
-          text: labelText(50), 
-          style: { fontSize: 48 }, 
-          align: 'center', 
-          verticalAlign: 'middle'
-        } 
-      } 
-    }, 
-    series: [ 
-      { 
-        type: 'marker', 
-        defaultPoint: { 
-          marker: { 
-            outline: { 
-              width: 10, 
-              color: 'currentColor'
-            }, 
-            fill: 'white', 
-            type: 'circle', 
-            size: 30 
-          } 
-        }, 
-        points: [{ y: 50 }] 
-      } 
-    ], 
-    toolbar_items: { 
-      Stop: { 
-        type: 'option', 
-        icon_name: 'system/default/pause', 
-        margin: 10, 
-        boxVisible: true, 
-        label_text: 'Pause', 
-        events: { change: playPause }, 
-        states_select_icon_name: 
-          'system/default/play', 
-        states_select_label_text: 'Play'
-      } 
-    } 
-  }, 
-  function() { 
-    playPause(); 
-  } 
-); 
-  
-/** 
- * Updates the chart with a random value. 
+<script>
+var ctx = document.getElementById("serial-port-data-chart").getContext("2d");
+var dataPointLimit =150; // number of data points to display on the chart
 
- */
-function updateChart(chrt) { 
-  chrt = chart || chrt; 
+var chart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [{
+      label: "Serial Port Data",
+      data: [],
+      borderColor: "rgba(75, 192, 192, 1)",
+      backgroundColor: "rgba(75, 192, 192, 0.2)"
+    }]
+  },
+  options: {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  }
+});
 
- var connection = new signalR.HubConnectionBuilder().withUrl("/dataHub").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("/dataHub").build();
 
- connection.on("ReceiveData", function (data) {
-            // Update the span element with the latest data
-            
-            let parsedData = parseInt(data);
-            if(isNaN(parsedData))
-            {
-                parsedData = 0;
-            }
-            y=parsedData;
-            console.log("a:" +y);
-            
-           
-        });
+connection.on("ReceiveData", function (data) {
+  if (data.trim() !== "") {
+    var parsedData = parseFloat(data);
 
-    connection.start().then(function () {
-        $.post("/Home/StartReading");
-    });
+    chart.data.labels.push("");
+    chart.data.datasets[0].data.push(parsedData);
 
-  
-  var series = chrt.series(0), 
- 
-    rValue = y; 
-    console.log("b:" +y);
-  
-  series.options({ 
-    shape_label_text: labelText(rValue) 
-  }); 
-  series.points(0).options({ y: rValue }); 
+    // Check if the number of data points is greater than the limit
+    if (chart.data.datasets[0].data.length > dataPointLimit) {
+      chart.data.labels.shift();
+      chart.data.datasets[0].data.shift();
+    }
 
-  // Call updateData to update the data
-  
-}
+    chart.update();
+  }
+});
 
-  
-function playPause(val) { 
-  if (val) { 
-    clearInterval(INTERVAL_ID); 
-  } else { 
-    INTERVAL_ID = setInterval(function() { 
-      updateChart(chart); 
-    }, 0); 
-  } 
-} 
-  
-function labelText(value) { 
-  var fgg = 
-    value >= 70 
-      ? 'Great!'
-      : value >= 30 
-      ? 'Good'
-      : 'weak'; 
-  return ( 
-    value + 
-    '<br/><span style="fontSize: 32px">' + 
-    fgg + 
-    '</span>'
-  ); 
-} 
+document.getElementById("startBtn").addEventListener("click", function () {
+  connection.start().then(function () {
+    $.post("/Home/StartReading");
+  });
+});
 
-
- 
-
-
-  </script>
-
-</body>
-
-</html>
+document.getElementById("stopBtn").addEventListener("click", function () {
+  connection.stop().then(function () {});
+});
+</script>

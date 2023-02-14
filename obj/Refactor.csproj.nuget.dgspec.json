@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj": {}
+    "C:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj": {}
   },
   "projects": {
-    "c:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj": {
+    "C:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj",
+        "projectUniqueName": "C:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj",
         "projectName": "Refactor",
-        "projectPath": "c:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj",
+        "projectPath": "C:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj",
         "packagesPath": "C:\\Users\\apple\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\apple\\Desktop\\Refactor\\obj\\",
+        "outputPath": "C:\\Users\\apple\\Desktop\\Refactor\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\apple\\AppData\\Roaming\\NuGet\\NuGet.Config",

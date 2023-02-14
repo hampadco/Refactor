@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qh05AF9FYi/ckPeTbBSVGLqA2gz+1UX46taxhplqBWCB7mdvyHlkvc07g8Z68T0WeC0hUNeC3bhGCvpDTz/2PA==",
+  "dgSpecHash": "MlcePD+3fjs9SJK8NwCtxuHIe6XsFJXUXMTCJ6YG8gHVX2WhK7LcgM4sgMXnLoX4dPj7Fw/VT+hKebuXm7mD+w==",
   "success": true,
-  "projectFilePath": "c:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj",
+  "projectFilePath": "C:\\Users\\apple\\Desktop\\Refactor\\Refactor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\apple\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\apple\\.nuget\\packages\\microsoft.aspnetcore.authorization\\2.2.0\\microsoft.aspnetcore.authorization.2.2.0.nupkg.sha512",
